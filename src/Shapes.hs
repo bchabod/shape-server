@@ -1,10 +1,12 @@
 module Shapes(
-  Shape, Point, Vector, Transform, Drawing,
+  Shape, Point, Vector, Transform, Style(..), Drawing,
   point, getX, getY,
   empty, circle, square,
   identity, translate, rotate, scale, (<+>),
-  inside)  where
+  inside, getColour)  where
 
+import Ansi
+import Data.Maybe
 
 -- Utilities
 
@@ -73,17 +75,28 @@ transform (Scale (Vector tx ty))     (Vector px py)  = Vector (px / tx)  (py / t
 transform (Rotate m)                 p = (invert m) `mult` p
 transform (Compose t1 t2)            p = transform t2 $ transform t1 p
 
+-- Stylesheet
+
+data Style = Style {strokeColour :: Colour, fillColour :: Colour, strokeWidth :: Int} deriving (Show)
+
 -- Drawings
 
-type Drawing = [(Transform,Shape)]
+type Drawing = [(Style,Transform,Shape)]
 
 -- interpretation function for drawings
+
+getColour :: Point -> Drawing -> Colour
+getColour p d = strokeColour $ head $ mapMaybe (inside2 p) d
 
 inside :: Point -> Drawing -> Bool
 inside p d = or $ map (inside1 p) d
 
-inside1 :: Point -> (Transform, Shape) -> Bool
-inside1 p (t,s) = insides (transform t p) s
+inside1 :: Point -> (Style, Transform, Shape) -> Bool
+inside1 p (st,t,s) = insides (transform t p) s
+
+inside2 :: Point -> (Style, Transform, Shape) -> Maybe Style
+inside2 p (st,t,s) = if result then Just st else Nothing
+  where result = insides (transform t p) s
 
 insides :: Point -> Shape -> Bool
 p `insides` Empty = False

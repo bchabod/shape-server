@@ -37,8 +37,8 @@ coords (Window _ _ (w,h)) = [ [(x,y) | x <- [0..w]] | y <- [0..h] ]
 -- render a drawing into a window
 render :: Window -> Drawing -> IO ()
 render win sh =  sequence_ $ map pix locations
-  where 
-    pix (p,(x,y)) | p `inside` sh = goto x y  >> putStr "*"
+  where
+    pix (p,(x,y)) | p `inside` sh = goto x y  >> color (p `getColour` sh) "*"
                   | otherwise     = return ()
     -- locations is a list of abstract coords ("pixels") and
     -- corresponding screen coords

@@ -27,18 +27,11 @@ shapeToSvg Empty    = S.rect ! A.width "0" ! A.height "0"
 shapeToSvg Square   = S.rect ! A.width "2" ! A.height "2"
 shapeToSvg Circle   = S.circle ! A.r "1"
 
-colourToHex :: Colour -> S.AttributeValue
-colourToHex Red = "#ff0000"
-colourToHex Green = "#00ff00"
-colourToHex Blue = "#0000ff"
-colourToHex Black = "#000000"
-colourToHex White = "#ffffff"
-colourToHex Yellow = "#ffff00"
-colourToHex Magenta = "#ff00ff"
-colourToHex Cyan = "#00ffff"
-
 convertStyle :: Style -> [S.Attribute]
-convertStyle st = [A.strokeWidth (S.stringValue $ show (strokeWidth st)), A.fill (colourToHex (fillColour st)), A.stroke (colourToHex (strokeColour st))]
+convertStyle st = [sw, fc, sc]
+    where sw = A.strokeWidth (S.stringValue $ show (strokeWidth st))
+          fc = A.fill (S.stringValue $ colourToHex (fillColour st))
+          sc = A.stroke (S.stringValue $ colourToHex (strokeColour st))
 
 convertTransform :: Transform -> [S.Attribute]
 convertTransform (Compose t1 t2) = (convertTransform t1) ++ (convertTransform t2)

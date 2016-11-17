@@ -9,7 +9,10 @@ import Shapes
 import Ansi
 import Interpreter
 
--- [(Style {strokeColour = Yellow, fillColour = Magenta, strokeWidth = 0.1},Scale (Vector 0.3 0.3),Circle)]
+-- A few examples to test:
+-- Basic circle is [(Style {strokeColour = Yellow, fillColour = Magenta, strokeWidth = 0.1},Scale (Vector 1.5 1.5),Circle)]
+-- Basic square is [(Style {strokeColour = Red, fillColour = Blue, strokeWidth = 0.4},Scale (Vector 0.5 0.5),Square)]
+-- Complicated is [(Style {strokeColour = Yellow, fillColour = Magenta, strokeWidth = 0.1},Compose (Scale (Vector 0.75 0.75)) (Translate (Vector (-2.5) (-2.5))),Square), (Style {strokeColour = Yellow, fillColour = Cyan, strokeWidth = 0.3},Compose (Scale (Vector 0.25 0.25)) (Rotate (Matrix (Vector 0.52 (-0.85)) (Vector 0.85 0.52))),Square), (Style {strokeColour = Blue, fillColour = Red, strokeWidth = 0.4},Compose (Scale (Vector 0.25 0.25)) (Translate (Vector 3.0 2.0)),Circle)]
 
 getSVG :: String -> Maybe Drawing
 getSVG s = TR.readMaybe s :: Maybe Drawing

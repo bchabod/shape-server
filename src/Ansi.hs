@@ -1,7 +1,7 @@
 module Ansi where
 
 data Colour = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
-  deriving (Eq,Show,Enum)
+  deriving (Eq,Show,Enum,Read)
 
 cls :: IO ()
 cls = putStr "\ESC[2J"

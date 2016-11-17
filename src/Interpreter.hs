@@ -1,18 +1,52 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Interpreter (getDoc) where
+module Interpreter (interpret) where
 
 import Text.Blaze.Svg11 ((!))
 import qualified Text.Blaze.Svg11 as S
 import qualified Text.Blaze.Svg11.Attributes as A
 import Text.Blaze.Svg.Renderer.String (renderSvg)
 
-getDoc :: String
-getDoc = renderSvg svgDoc
+import Shapes
+import Ansi
 
-svgDoc :: S.Svg
-svgDoc = S.docTypeSvg ! A.version "1.1" ! A.width "150" ! A.height "100" ! A.viewbox "0 0 3 2" $ do
-    S.g $ do
-      S.rect ! A.width "1" ! A.height "2" ! A.fill "#008d46"
-      S.rect ! A.width "1" ! A.height "2" ! A.fill "#ffffff"
-      S.rect ! A.width "1" ! A.height "2" ! A.fill "#d2232c"
+basicDoc = S.docTypeSvg ! A.version "1.1" ! A.width "50" ! A.height "50" ! A.viewbox "-2 -2 4 4"
+
+interpret :: Drawing -> String
+interpret d = renderSvg $ basicDoc $ getSvg d
+
+getSvg :: Drawing -> S.Svg
+getSvg d = foldl1 (>>) convertedDrawing
+    where convertedDrawing = (map convertShape d)
+
+convertShape :: (Style, Transform, Shape) -> S.Svg
+convertShape (st, t, s) = foldl (!) (shapeToSvg s) ((convertStyle st) ++ (convertTransform t))
+
+shapeToSvg :: Shape -> S.Svg
+shapeToSvg Empty    = S.rect ! A.width "0" ! A.height "0"
+shapeToSvg Square   = S.rect ! A.width "2" ! A.height "2"
+shapeToSvg Circle   = S.circle ! A.r "1"
+
+colourToHex :: Colour -> S.AttributeValue
+colourToHex Red = "#ff0000"
+colourToHex Green = "#00ff00"
+colourToHex Blue = "#0000ff"
+colourToHex Black = "#000000"
+colourToHex White = "#ffffff"
+colourToHex Yellow = "#ffff00"
+colourToHex Magenta = "#ff00ff"
+colourToHex Cyan = "#00ffff"
+
+convertStyle :: Style -> [S.Attribute]
+convertStyle st = [A.strokeWidth (S.stringValue $ show (strokeWidth st)), A.fill (colourToHex (fillColour st)), A.stroke (colourToHex (strokeColour st))]
+
+convertTransform :: Transform -> [S.Attribute]
+convertTransform (Compose t1 t2) = (convertTransform t1) ++ (convertTransform t2)
+convertTransform Identity = []
+convertTransform (Translate (Vector tx ty)) = [A.transform $ S.translate tx ty]
+convertTransform (Scale (Vector tx ty)) = [A.transform $ S.scale tx ty]
+convertTransform (Rotate m) = [A.transform $ S.matrix m11 m12 0 m21 m22 0]
+    where m11 = getX $ getL1 m
+          m12 = getY $ getL1 m
+          m21 = getX $ getL2 m
+          m22 = getY $ getL2 m

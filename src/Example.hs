@@ -60,8 +60,6 @@ example = bouncingBall `joinDS` rotatingSquare
            
 runExample :: IO ()
 runExample = do
-  animate defaultWindow 0 endTime example
   putStrLn svg
-    where endTime = 1
-          svg = getDoc
+    where svg = interpret [( Style {strokeColour=Yellow, fillColour=Magenta, strokeWidth=0.1}, scale (point 0.3 0.3), circle )]
 

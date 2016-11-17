@@ -1,6 +1,6 @@
 module Shapes(
-  Shape, Point, Vector, Transform, Style(..), Drawing,
-  point, getX, getY,
+  Shape(..), Point, Vector(..), Transform(..), Style(..), Drawing,
+  point, getX, getY, getL1, getL2,
   empty, circle, square,
   identity, translate, rotate, scale, (<+>),
   inside, getColour)  where
@@ -33,6 +33,8 @@ matrix a b c d = Matrix (Vector a b) (Vector c d)
 
 getX (Vector x y) = x
 getY (Vector x y) = y
+getL1 (Matrix v1 v2) = v1
+getL2 (Matrix v1 v2) = v2
 
 -- Shapes
 

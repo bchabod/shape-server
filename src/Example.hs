@@ -5,6 +5,7 @@ import Ansi
 import Signal
 import Animate (animate)
 import Render (defaultWindow)
+import Interpreter
 
 staticBall :: Signal Drawing
 staticBall = pure [(Style {strokeColour=Red, fillColour=Red, strokeWidth=1}, scale (point 0.5 0.5) <+> translate (point 1.2 0.4), circle)]
@@ -58,6 +59,9 @@ example = bouncingBall `joinDS` rotatingSquare
 
            
 runExample :: IO ()
-runExample = animate defaultWindow 0 endTime example
-  where endTime = 15
+runExample = do
+  animate defaultWindow 0 endTime example
+  putStrLn svg
+    where endTime = 1
+          svg = getDoc
 

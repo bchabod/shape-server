@@ -22,14 +22,14 @@ rotatingSquare = fmap (:[]) $ fmap (addT sq) rs
            rs = fmap rotate timeS -- using timeS as the source for the rotation angle
 
            sq :: (Style, Transform, Shape)
-           sq = ( Style {strokeColour=Red, fillColour=Red, strokeWidth=1}, scale (point 0.5 0.5) <+> translate (point 1.2 0.4) , square)
+           sq = ( Style {strokeColour=Red, fillColour=Green, strokeWidth=0.1}, scale (point 0.5 0.5) <+> translate (point 1.2 0.4) , square)
 
 bouncingBall :: Signal Drawing
 bouncingBall = fmap (:[]) $ fmap (preaddT ball) ( fmap translate pos )
        where bounceY = fmap (sin . (3*)) timeS
              bounceX = fmap (sin . (2*)) timeS
              pos = pure point <*> bounceX <*> bounceY
-             ball = ( Style {strokeColour=Blue, fillColour=Red, strokeWidth=1}, scale (point 0.3 0.3), circle )
+             ball = ( Style {strokeColour=Yellow, fillColour=Magenta, strokeWidth=0.1}, scale (point 0.3 0.3), circle )
 
 
 
@@ -47,7 +47,7 @@ movingBall = fmap (:[]) $ fmap (addT ball) ts
              pos = pure point <*> pure 0.0 <*> bounceY
 
              ball :: (Style, Transform, Shape)
-             ball = ( Style {strokeColour=Blue, fillColour=Red, strokeWidth=1}, scale (point 0.3 0.3), circle )
+             ball = ( Style {strokeColour=Yellow, fillColour=Magenta, strokeWidth=0.1}, scale (point 0.3 0.3), circle )
 
 joinDS :: Signal [a] -> Signal [a] -> Signal [a]
 joinDS s0 s1 = (fmap ( (++) ) s0) <*> s1

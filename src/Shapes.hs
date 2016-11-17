@@ -77,7 +77,7 @@ transform (Compose t1 t2)            p = transform t2 $ transform t1 p
 
 -- Stylesheet
 
-data Style = Style {strokeColour :: Colour, fillColour :: Colour, strokeWidth :: Int} deriving (Show)
+data Style = Style {strokeColour :: Colour, fillColour :: Colour, strokeWidth :: Double} deriving (Show)
 
 -- Drawings
 
@@ -86,7 +86,7 @@ type Drawing = [(Style,Transform,Shape)]
 -- interpretation function for drawings
 
 getColour :: Point -> Drawing -> Colour
-getColour p d = strokeColour $ head $ mapMaybe (inside2 p) d
+getColour p d = head $ mapMaybe (inside2 p) d
 
 inside :: Point -> Drawing -> Bool
 inside p d = or $ map (inside1 p) d
@@ -94,15 +94,24 @@ inside p d = or $ map (inside1 p) d
 inside1 :: Point -> (Style, Transform, Shape) -> Bool
 inside1 p (st,t,s) = insides (transform t p) s
 
-inside2 :: Point -> (Style, Transform, Shape) -> Maybe Style
-inside2 p (st,t,s) = if result then Just st else Nothing
-  where result = insides (transform t p) s
+inside2 :: Point -> (Style, Transform, Shape) -> Maybe Colour
+inside2 p (st,t,s) = if isInside
+                     then if ifInsideBorder
+                        then Just (fillColour st)
+                        else Just (strokeColour st)
+                     else Nothing
+  where isInside = insides (transform t p) s
+        ifInsideBorder = insidesBorder (transform t p) s (strokeWidth st)
 
 insides :: Point -> Shape -> Bool
 p `insides` Empty = False
 p `insides` Circle = distance p <= 1
 p `insides` Square = maxnorm  p <= 1
 
+insidesBorder :: Point -> Shape -> Double -> Bool
+insidesBorder p Empty _ = False
+insidesBorder p Circle strokeWidth = distance p <= 1 - strokeWidth
+insidesBorder p Square strokeWidth = maxnorm  p <= 1 - strokeWidth
 
 distance :: Point -> Double
 distance (Vector x y ) = sqrt ( x**2 + y**2 )

@@ -24,5 +24,5 @@ getPage Nothing = "Error! The drawing description that you supplied could not be
 main = scotty 3000 $ do
   get "/" $ file "./static/index.html"
   post "/svg" $ do
-	drawing <- (param "drawing") `rescue` (\msg -> return "")
-	html $ pack $ getPage $ getSVG $ unpack drawing
+    drawing <- (param "drawing") `rescue` (\msg -> return "")
+    html $ pack $ getPage $ getSVG $ unpack drawing
